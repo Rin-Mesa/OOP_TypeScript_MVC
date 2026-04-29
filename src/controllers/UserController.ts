@@ -6,7 +6,7 @@ export class UserController {
     // CREATE
     static async createUser(req: Request, res: Response) {
         try {
-            const { name, email } = req.body; // destructuring
+            const { name, email } = req.body;
 
             const newUser = new User(name, email);
             await User.create(newUser);
@@ -29,7 +29,7 @@ export class UserController {
         }
     }
 
-    // GET ONE
+    // GET BY ID
     static async getUser(req: Request, res: Response) {
         try {
             const { id } = req.params;
