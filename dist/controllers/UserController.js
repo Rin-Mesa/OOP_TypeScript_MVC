@@ -1,42 +1,41 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.UserController = void 0;
-const User_1 = require("../models/User");
-class UserController {
+const baseController_1 = require("./baseController");
+const User_1 = require("../service/User");
+class UserController extends baseController_1.BaseController {
     // CREATE
     static async createUser(req, res) {
         try {
-            const { name, email } = req.body; // destructuring
-            const newUser = new User_1.User(name, email);
-            await User_1.User.create(newUser);
-            res.json({ message: "User created" });
+            const { name, email } = req.body;
+            const result = await User_1.UserService.createUser(name, email);
+            UserController.sendSuccess(res, { id: result.insertId, name, email }, 201);
         }
         catch (error) {
-            console.error("Error creating user:", error.message);
-            res.status(500).json({ error: error.message || "Failed to create user" });
+            UserController.sendError(res, error);
         }
     }
     // GET ALL
     static async getUsers(req, res) {
         try {
-            const users = await User_1.User.getAll();
-            res.json(users);
+            const users = await User_1.UserService.getUsers();
+            UserController.sendSuccess(res, users);
         }
         catch (error) {
-            console.error("Error fetching users:", error.message);
-            res.status(500).json({ error: error.message || "Error fetching users" });
+            UserController.sendError(res, error);
         }
     }
-    // GET ONE
+    // GET BY ID
     static async getUser(req, res) {
         try {
             const { id } = req.params;
-            const user = await User_1.User.getById(Number(id));
-            res.json(user);
+            const user = await User_1.UserService.getUser(Number(id));
+            if (!user)
+                return UserController.sendError(res, { message: "User not found" }, 404);
+            UserController.sendSuccess(res, user);
         }
         catch (error) {
-            console.error("Error fetching user:", error.message);
-            res.status(500).json({ error: error.message || "Error fetching user" });
+            UserController.sendError(res, error);
         }
     }
     // UPDATE
@@ -44,24 +43,22 @@ class UserController {
         try {
             const { id } = req.params;
             const { name, email } = req.body;
-            await User_1.User.update(Number(id), { name, email });
-            res.json({ message: "User updated" });
+            await User_1.UserService.updateUser(Number(id), name, email);
+            UserController.sendSuccess(res, { message: "User updated" });
         }
         catch (error) {
-            console.error("Error updating user:", error.message);
-            res.status(500).json({ error: error.message || "Error updating user" });
+            UserController.sendError(res, error);
         }
     }
     // DELETE
     static async deleteUser(req, res) {
         try {
             const { id } = req.params;
-            await User_1.User.delete(Number(id));
-            res.json({ message: "User deleted" });
+            await User_1.UserService.deleteUser(Number(id));
+            UserController.sendSuccess(res, { message: "User deleted" });
         }
         catch (error) {
-            console.error("Error deleting user:", error.message);
-            res.status(500).json({ error: error.message || "Error deleting user" });
+            UserController.sendError(res, error);
         }
     }
 }
