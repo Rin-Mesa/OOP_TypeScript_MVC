@@ -9,14 +9,5 @@ exports.db = promise_1.default.createPool({
     host: 'localhost',
     user: 'root',
     password: '',
-    database: 'users',
-});
-// Test connection on startup
-exports.db.getConnection()
-    .then(connection => {
-    console.log("✅ Database connected successfully!");
-    connection.release();
-})
-    .catch(error => {
-    console.error("❌ Database connection failed:", error.message);
+    database: 'users_db',
 });
